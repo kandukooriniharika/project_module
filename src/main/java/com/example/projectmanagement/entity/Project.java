@@ -36,7 +36,6 @@ public class Project {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
-
     private User owner;
 
     @ManyToMany
@@ -45,8 +44,6 @@ public class Project {
         joinColumns = @JoinColumn(name = "project_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-
- 
     private List<User> members;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -57,6 +54,12 @@ public class Project {
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> tasks;
+
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
+
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -70,9 +73,7 @@ public class Project {
         ACTIVE, ARCHIVED, PLANNING
     }
 
-    // Constructors
-    public Project() {
-    }
+    public Project() {}
 
     public Project(String name, String projectKey, String description, User owner) {
         this.name = name;
@@ -80,6 +81,29 @@ public class Project {
         this.description = description;
         this.owner = owner;
     }
+
+    // Getters and setters...
+
+    // Add startDate and endDate getters/setters:
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    // (All other existing getters/setters remain unchanged)
+
+
 
     // Getters and Setters
     public Long getId() {

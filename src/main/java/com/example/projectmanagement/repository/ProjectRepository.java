@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    
+     Page<Project> findByNameContainingAndStatus(String name, Project.ProjectStatus status, Pageable pageable);
     Optional<Project> findByProjectKey(String projectKey);
     
     List<Project> findByStatus(Project.ProjectStatus status);

@@ -70,16 +70,23 @@ public class Project {
     private LocalDateTime updatedAt;
 
     public enum ProjectStatus {
-        ACTIVE, ARCHIVED, PLANNING
+        ACTIVE, ARCHIVED, PLANNING, COMPLETED;
+
+        boolean equalsIgnoreCase(String string) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'equalsIgnoreCase'");
+        }
     }
 
     public Project() {}
 
-    public Project(String name, String projectKey, String description, User owner) {
+    public Project(String name, String projectKey, String description, User owner, LocalDateTime startDate, LocalDateTime endDate) {
         this.name = name;
         this.projectKey = projectKey;
         this.description = description;
         this.owner = owner;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     // Getters and setters...

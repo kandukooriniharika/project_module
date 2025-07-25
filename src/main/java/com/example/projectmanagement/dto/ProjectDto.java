@@ -1,7 +1,7 @@
 package com.example.projectmanagement.dto;
 
 import com.example.projectmanagement.entity.Project;
-import com.example.projectmanagement.entity.User;
+// import com.example.projectmanagement.entity.User;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

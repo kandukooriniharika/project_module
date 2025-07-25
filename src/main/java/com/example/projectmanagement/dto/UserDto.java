@@ -23,7 +23,6 @@ public class UserDto {
     @NotNull(message = "Role is required")
     private User.UserRole role;
     
-    private String avatar;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -49,8 +48,7 @@ public class UserDto {
     public User.UserRole getRole() { return role; }
     public void setRole(User.UserRole role) { this.role = role; }
     
-    public String getAvatar() { return avatar; }
-    public void setAvatar(String avatar) { this.avatar = avatar; }
+    
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

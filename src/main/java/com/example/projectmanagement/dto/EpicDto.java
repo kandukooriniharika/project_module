@@ -1,17 +1,26 @@
 package com.example.projectmanagement.dto;
 
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+
+
 
 public class EpicDto {
     private Long id;
+    @NotBlank(message = "Epic name is required")
     private String name;
+    @Size(max = 1000, message = "Description can’t exceed 1000 characters")
     private String description;
     private String status;
     private String priority;
     private Integer progressPercentage;
     private LocalDateTime dueDate;
+    @NotNull(message = "Project ID is required")
     private Long projectId;
-    private Long sprintId;
+    
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -38,6 +47,5 @@ public class EpicDto {
     public Long getProjectId() { return projectId; }
     public void setProjectId(Long projectId) { this.projectId = projectId; }
 
-    public Long getSprintId() { return sprintId; }
-    public void setSprintId(Long sprintId) { this.sprintId = sprintId; }
+    
 }

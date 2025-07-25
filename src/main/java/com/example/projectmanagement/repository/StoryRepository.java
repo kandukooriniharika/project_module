@@ -32,4 +32,19 @@ public interface StoryRepository extends JpaRepository<Story, Long> {
     
     @Query("SELECT s FROM Story s WHERE s.priority = :priority")
     Page<Story> findByPriority(@Param("priority") Story.Priority priority, Pageable pageable);
+
+    @Query("SELECT s FROM Story s " +
+        "WHERE (:title IS NULL OR LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%'))) " +
+        "AND (:priority IS NULL OR s.priority = :priority) " +
+        "AND (:epicId IS NULL OR s.epic.id = :epicId) " +
+        "AND (:sprintId IS NULL OR s.sprint.id = :sprintId) " +
+        "AND (:projectId IS NULL OR s.project.id = :projectId)")
+    Page<Story> searchByFilters(
+            @Param("title") String title,
+            @Param("priority") Story.Priority priority,
+            @Param("epicId") Long epicId,
+            @Param("sprintId") Long sprintId,
+            @Param("projectId") Long projectId,
+            Pageable pageable
+    );
 }

@@ -30,6 +30,12 @@ public class StoryDto {
     
     @NotNull(message = "Reporter ID is required")
     private Long reporterId;
+
+    @NotNull(message = "Sprint ID is required")
+    private Long sprintId;
+ 
+    @NotNull(message = "Project ID is required")
+    private Long projectId;
     
     private Long assigneeId;
     private UserDto assignee;
@@ -93,4 +99,29 @@ public class StoryDto {
     
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public Long getSprintId() {
+
+        return sprintId;
+
+    }
+ 
+    public void setSprintId(Long sprintId) {
+
+        this.sprintId = sprintId;
+
+    }
+ 
+    public Long getProjectId() {
+
+        return projectId;
+
+    }
+ 
+    public void setProjectId(Long projectId) {
+
+        this.projectId = projectId;
+
+    }
+ 
 }

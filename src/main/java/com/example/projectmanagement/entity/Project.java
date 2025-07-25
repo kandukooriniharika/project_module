@@ -85,8 +85,8 @@ public class Project {
         this.projectKey = projectKey;
         this.description = description;
         this.owner = owner;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startDate=startDate;
+        this.endDate=endDate;
     }
 
     // Getters and setters...

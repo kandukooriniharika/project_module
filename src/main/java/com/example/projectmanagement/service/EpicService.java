@@ -3,13 +3,13 @@ package com.example.projectmanagement.service;
 import com.example.projectmanagement.dto.EpicDto;
 import com.example.projectmanagement.entity.Epic;
 import com.example.projectmanagement.entity.Project;
-import com.example.projectmanagement.entity.Sprint;
+
 import com.example.projectmanagement.entity.Epic.EpicStatus;
 import com.example.projectmanagement.entity.Epic.Priority;
 import com.example.projectmanagement.repository.EpicRepository;
 import com.example.projectmanagement.repository.ProjectRepository;
-import com.example.projectmanagement.repository.SprintRepository;
-import com.example.projectmanagement.repository.UserRepository;
+
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,11 +29,9 @@ public class EpicService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    @Autowired
-    private UserRepository UserRepository;
+    
 
-    @Autowired
-    private SprintRepository sprintRepository;
+    
 
     // ✅ Create Epic
     public EpicDto createEpic(EpicDto epicDto) {
@@ -60,32 +58,38 @@ public class EpicService {
         Optional<Epic> optionalEpic = epicRepository.findById(id);
         if (optionalEpic.isPresent()) {
             Epic existingEpic = optionalEpic.get();
+
             existingEpic.setName(epicDto.getName());
             existingEpic.setDescription(epicDto.getDescription());
-            existingEpic.setStatus(epicDto.getStatus());
-            existingEpic.setPriority(epicDto.getPriority());
+
+            // ✅ Convert String to Enum
+            if (epicDto.getStatus() != null) {
+                existingEpic.setStatus(Epic.EpicStatus.valueOf(epicDto.getStatus()));
+            }
+            if (epicDto.getPriority() != null) {
+                existingEpic.setPriority(Epic.Priority.valueOf(epicDto.getPriority()));
+            }
+
             existingEpic.setProgressPercentage(epicDto.getProgressPercentage());
-            existingEpic.setDueDate(epicDto.getDueDate());
+
+            // ✅ Convert LocalDateTime to LocalDate
+            if (epicDto.getDueDate() != null) {
+                existingEpic.setDueDate(epicDto.getDueDate().toLocalDate());
+            }
 
             if (epicDto.getProjectId() != null) {
                 Project project = projectRepository.findById(epicDto.getProjectId()).orElse(null);
                 existingEpic.setProject(project);
             }
 
-            if (epicDto.getSprintId() != null) {
-                Sprint sprint = sprintRepository.findById(epicDto.getSprintId()).orElseThrow(
-                        () -> new RuntimeException("Sprint not found with id: " + epicDto.getSprintId())
-                );
-                existingEpic.setSprint(sprint);
-            } else {
-                existingEpic.setSprint(null);
-            }
+            
 
             Epic updatedEpic = epicRepository.save(existingEpic);
             return convertToDto(updatedEpic);
         }
         return null;
     }
+
 
     // ✅ Delete Epic
     public boolean deleteEpic(Long id) {
@@ -102,18 +106,28 @@ public class EpicService {
         dto.setId(epic.getId());
         dto.setName(epic.getName());
         dto.setDescription(epic.getDescription());
-        dto.setStatus(epic.getStatus());
-        dto.setPriority(epic.getPriority());
+
+        // Convert enum to String
+        if (epic.getStatus() != null) {
+            dto.setStatus(epic.getStatus().name()); // EpicStatus to String
+        }
+
+        if (epic.getPriority() != null) {
+            dto.setPriority(epic.getPriority().name()); // Priority to String
+        }
+
         dto.setProgressPercentage(epic.getProgressPercentage());
-        dto.setDueDate(epic.getDueDate());
+
+        // Convert LocalDate to LocalDateTime for DTO
+        if (epic.getDueDate() != null) {
+            dto.setDueDate(epic.getDueDate().atStartOfDay()); // LocalDate -> LocalDateTime
+        }
 
         if (epic.getProject() != null) {
             dto.setProjectId(epic.getProject().getId());
         }
 
-        if (epic.getSprint() != null) {
-            dto.setSprintId(epic.getSprint().getId());
-        }
+        
 
         return dto;
     }
@@ -122,25 +136,33 @@ public class EpicService {
         Epic epic = new Epic();
         epic.setName(dto.getName());
         epic.setDescription(dto.getDescription());
-        epic.setStatus(dto.getStatus());
-        epic.setPriority(dto.getPriority());
+
+        // Convert String to Enum safely
+        if (dto.getStatus() != null) {
+            epic.setStatus(Epic.EpicStatus.valueOf(dto.getStatus().toUpperCase()));
+        }
+
+        if (dto.getPriority() != null) {
+            epic.setPriority(Epic.Priority.valueOf(dto.getPriority().toUpperCase()));
+        }
+
         epic.setProgressPercentage(dto.getProgressPercentage());
-        epic.setDueDate(dto.getDueDate());
+
+        // Convert LocalDateTime to LocalDate
+        if (dto.getDueDate() != null) {
+            epic.setDueDate(dto.getDueDate().toLocalDate());
+        }
 
         if (dto.getProjectId() != null) {
             Project project = projectRepository.findById(dto.getProjectId()).orElse(null);
             epic.setProject(project);
         }
 
-        if (dto.getSprintId() != null) {
-            Sprint sprint = sprintRepository.findById(dto.getSprintId()).orElseThrow(
-                    () -> new RuntimeException("Sprint not found with id: " + dto.getSprintId())
-            );
-            epic.setSprint(sprint);
-        }
+        
 
         return epic;
     }
+
 
     // ✅ Optional methods to implement
     public List<EpicDto> getEpicsByProjectId(Long projectId) {

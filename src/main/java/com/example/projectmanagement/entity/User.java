@@ -32,7 +32,6 @@ public class User {
     @Column(nullable = false)
     private UserRole role;
     
-    private String avatar;
     
     @OneToMany(mappedBy = "assignee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> assignedTasks;
@@ -77,8 +76,7 @@ public class User {
     public UserRole getRole() { return role; }
     public void setRole(UserRole role) { this.role = role; }
     
-    public String getAvatar() { return avatar; }
-    public void setAvatar(String avatar) { this.avatar = avatar; }
+    
     
     public List<Task> getAssignedTasks() { return assignedTasks; }
     public void setAssignedTasks(List<Task> assignedTasks) { this.assignedTasks = assignedTasks; }

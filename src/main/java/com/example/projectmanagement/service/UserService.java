@@ -87,7 +87,7 @@ public class UserService {
         existingUser.setName(userDto.getName());
         existingUser.setEmail(userDto.getEmail());
         existingUser.setRole(userDto.getRole());
-        existingUser.setAvatar(userDto.getAvatar());
+        
         
         User updatedUser = userRepository.save(existingUser);
         return modelMapper.map(updatedUser, UserDto.class);

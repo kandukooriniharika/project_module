@@ -52,15 +52,16 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    @ExceptionHandler(CustomValidationException.class)
-public ResponseEntity<Map<String, Object>> handleCustomValidationException(CustomValidationException ex) {
+    @ExceptionHandler(ValidationException.class)
+public ResponseEntity<Map<String, Object>> handleValidationException(ValidationException ex) {
     Map<String, Object> response = new HashMap<>();
-    response.put("status", HttpStatus.BAD_REQUEST.value());
+    response.put("status", 400);
     response.put("message", "Validation failed");
     response.put("errors", ex.getErrors());
     response.put("timestamp", LocalDateTime.now());
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 }
+      
 
     public static class ErrorResponse {
         private int status;

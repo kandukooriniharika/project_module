@@ -32,8 +32,8 @@ public class StoryController {
     public ResponseEntity<StoryDto> createStory(@Valid @RequestBody StoryDto storyDto) {
         StoryDto createdStory = storyService.createStory(storyDto);
         return new ResponseEntity<>(createdStory, HttpStatus.CREATED);
-
     }
+
  
     // ✅ Get story by ID
 
@@ -124,6 +124,11 @@ public class StoryController {
         return ResponseEntity.ok(stories);
 
     }
+    @GetMapping("/epic/{epicId}")
+    public ResponseEntity<List<StoryDto>> getStoriesByEpic(@PathVariable Long epicId) {
+        List<StoryDto> stories = storyService.getStoriesByEpic(epicId);
+        return ResponseEntity.ok(stories);
+    }
  
     // ✅ Update a story
 
@@ -148,6 +153,11 @@ public class StoryController {
         return ResponseEntity.noContent().build();
 
     }
+    @GetMapping("/sprint/{sprintId}")
+    public ResponseEntity<List<StoryDto>> getStoriesBySprint(@PathVariable Long sprintId) {
+        return ResponseEntity.ok(storyService.getStoriesBySprint(sprintId));
+    }
+
 
 }
 

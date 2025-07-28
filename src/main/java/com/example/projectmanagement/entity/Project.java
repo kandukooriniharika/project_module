@@ -70,8 +70,11 @@ public class Project {
     private LocalDateTime updatedAt;
 
     public enum ProjectStatus {
-        ACTIVE, ARCHIVED, PLANNING
+        ACTIVE, ARCHIVED, PLANNING, COMPLETED;
+
+
     }
+    
 
     public Project() {}
 

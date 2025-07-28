@@ -60,6 +60,7 @@
 //             .authorizeHttpRequests(auth -> auth
 
 //                 .requestMatchers("/auth/**", "/api/epics", "/api/stories").permitAll()
+//                 .requestMatchers("/auth/**").permitAll()
 
 //                 .anyRequest().authenticated()
 //                 .anyRequest().authenticated()

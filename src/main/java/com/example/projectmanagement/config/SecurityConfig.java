@@ -1,59 +1,59 @@
-package com.example.projectmanagement.config;
+// package com.example.projectmanagement.config;
  
-import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Bean;
 
-import org.springframework.context.annotation.Configuration;
+// import org.springframework.context.annotation.Configuration;
 
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+// import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
-import org.springframework.security.oauth2.jwt.JwtDecoder;
+// import org.springframework.security.oauth2.jwt.JwtDecoder;
 
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+// import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
-import org.springframework.security.web.SecurityFilterChain;
+// import org.springframework.security.web.SecurityFilterChain;
  
-@Configuration
+// @Configuration
 
-@EnableWebSecurity
+// @EnableWebSecurity
 
-public class SecurityConfig {
+// public class SecurityConfig {
  
-    // Placeholder JWKS endpoint — update this later
+//     // Placeholder JWKS endpoint — update this later
 
-    private static final String JWKS_URI = "https://dummy-domain.com/.well-known/jwks.json";
+//     private static final String JWKS_URI = "https://dummy-domain.com/.well-known/jwks.json";
  
-    @Bean
+//     @Bean
 
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
+//         http
 
-            .csrf(csrf -> csrf.disable())
+//             .csrf(csrf -> csrf.disable())
 
-            .authorizeHttpRequests(auth -> auth
+//             .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers("/auth/**").permitAll()
+//                 .requestMatchers("/auth/**").permitAll()
 
-                .anyRequest().authenticated()
+//                 .anyRequest().authenticated()
 
-            )
+//             )
 
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())));
+//             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())));
  
-        return http.build();
+//         return http.build();
 
-    }
+//     }
  
-    @Bean
+//     @Bean
 
-    public JwtDecoder jwtDecoder() {
+//     public JwtDecoder jwtDecoder() {
 
-        return NimbusJwtDecoder.withJwkSetUri(JWKS_URI).build();
+//         return NimbusJwtDecoder.withJwkSetUri(JWKS_URI).build();
 
-    }
+//     }
 
-}
+// }
 
  

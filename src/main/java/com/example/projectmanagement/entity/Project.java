@@ -72,11 +72,9 @@ public class Project {
     public enum ProjectStatus {
         ACTIVE, ARCHIVED, PLANNING, COMPLETED;
 
-        boolean equalsIgnoreCase(String string) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'equalsIgnoreCase'");
-        }
+
     }
+    
 
     public Project() {}
 

@@ -39,6 +39,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     
     @Query("SELECT t FROM Task t WHERE t.priority = :priority")
     Page<Task> findByPriority(@Param("priority") Task.Priority priority, Pageable pageable);
+
+    @Query("SELECT COUNT(t) FROM Task t WHERE t.story.id = :storyId")
+long countByStoryId(@Param("storyId") Long storyId);
+
     
     @Query("SELECT t FROM Task t WHERE t.sprint IS NULL AND t.status IN ('BACKLOG', 'TODO')")
     List<Task> findBacklogTasks();

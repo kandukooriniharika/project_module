@@ -35,6 +35,15 @@ public class TaskService {
     @Autowired
     private ModelMapper modelMapper;
     
+
+    
+//  count for no of task under a story
+    
+    public long countTasksByStoryId(Long storyId) {
+        return taskRepository.countByStoryId(storyId);
+    
+}
+
     public TaskDto createTask(TaskDto taskDto) {
         Project project = projectRepository.findById(taskDto.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Project not found with id: " + taskDto.getProjectId()));

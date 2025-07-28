@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -75,5 +76,13 @@ public class TaskController {
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
+   }
+
+  
+
+    @GetMapping("/story/{storyId}/count")
+    public ResponseEntity<?> getTaskCountByStory(@PathVariable Long storyId) {
+        long count = taskService.countTasksByStoryId(storyId);
+        return ResponseEntity.ok(Map.of("storyId", storyId, "taskCount", count));
     }
 }

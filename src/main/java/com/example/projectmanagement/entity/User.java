@@ -75,9 +75,7 @@ public class User {
     
     public UserRole getRole() { return role; }
     public void setRole(UserRole role) { this.role = role; }
-    
-    
-    
+
     public List<Task> getAssignedTasks() { return assignedTasks; }
     public void setAssignedTasks(List<Task> assignedTasks) { this.assignedTasks = assignedTasks; }
     

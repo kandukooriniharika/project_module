@@ -8,7 +8,8 @@ public class ValidationException extends RuntimeException {
 
     public ValidationException(List<String> errors2) {
         super("Validation failed");
-        this.errors = (Map<String, String>) errors2;
+        this.errors = (Map<String, String>) errors2; 
+        
     }
 
     public Map<String, String> getErrors() {

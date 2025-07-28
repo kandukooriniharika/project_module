@@ -86,7 +86,10 @@ public class UserService {
         
         existingUser.setName(userDto.getName());
         existingUser.setEmail(userDto.getEmail());
-        existingUser.setRole(userDto.getRole());
+        // Assuming userDto.getRoles() returns a List<String> and you want to set the first role
+        if (userDto.getRoles() != null && !userDto.getRoles().isEmpty()) {
+            existingUser.setRole(User.UserRole.valueOf(userDto.getRoles().get(0)));
+        }
         
         
         User updatedUser = userRepository.save(existingUser);

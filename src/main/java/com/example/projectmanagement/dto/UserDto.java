@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserDto {
     
@@ -25,15 +26,16 @@ public class UserDto {
     
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    
+
     // Constructors
     public UserDto() {}
     
-    public UserDto(String name, String email, User.UserRole role) {
-        this.name = name;
-        this.email = email;
-        this.role = role;
-    }
+    public UserDto(Long id, String email, List<String> roles) {
+    this.id = id;
+    this.email = email;
+   
+}
+
     
     // Getters and Setters
     public Long getId() { return id; }

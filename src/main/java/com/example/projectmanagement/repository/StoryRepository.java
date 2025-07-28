@@ -20,6 +20,8 @@ public interface StoryRepository extends JpaRepository<Story, Long> {
     List<Story> findByAssigneeId(Long assigneeId);
     
     List<Story> findByReporterId(Long reporterId);
+    List<Story> findBySprintId(Long sprintId);
+
     
     @Query("SELECT s FROM Story s WHERE s.epic.id = :epicId AND s.status = :status")
     List<Story> findByEpicIdAndStatus(@Param("epicId") Long epicId, @Param("status") Story.StoryStatus status);

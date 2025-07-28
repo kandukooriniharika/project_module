@@ -165,6 +165,13 @@ public class StoryService {
                 .collect(Collectors.toList());
 
     }
+    @Transactional(readOnly = true)
+    public List<StoryDto> getStoriesBySprint(Long sprintId) {
+        return storyRepository.findBySprintId(sprintId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
  
     public StoryDto updateStory(Long id, StoryDto storyDto) {
 

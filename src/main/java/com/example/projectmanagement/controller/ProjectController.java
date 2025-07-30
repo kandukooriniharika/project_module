@@ -50,12 +50,19 @@ public class ProjectController {
     }
 
     // ✅ UPDATE project
-    @PutMapping("/{id}")
-    public ResponseEntity<ProjectDto> updateProject(@PathVariable Long id,
-            @Valid @RequestBody ProjectDto projectDto) {
-        ProjectDto updatedProject = projectService.updateProject(id, projectDto);
-        return ResponseEntity.ok(updatedProject);
-    }
+  @PutMapping("/{id}")
+public ResponseEntity<ProjectDto> updateProject(@PathVariable Long id,
+                                                @RequestBody ProjectDto updatedProjectDto) {
+    ProjectDto updated = projectService.updateProject(id, updatedProjectDto);
+    return ResponseEntity.ok(updated);
+}
+@PatchMapping("/api/projects/{projectId}/unarchive")
+public ResponseEntity<ProjectDto> unarchiveProject(@PathVariable Long projectId) {
+    ProjectDto dto = projectService.unarchiveProject(projectId);
+    return ResponseEntity.ok(dto);
+}
+
+
 
     // ✅ DELETE project
     @DeleteMapping("/{id}")

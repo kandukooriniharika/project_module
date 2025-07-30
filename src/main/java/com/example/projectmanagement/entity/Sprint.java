@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -56,9 +57,20 @@ public class Sprint {
     public enum SprintStatus {
         PLANNING, ACTIVE, COMPLETED
     }
+
+    
+
+    @ManyToOne
+    @JoinColumn(name = "started_by_id")
+    private User startedBy;
+
+    private LocalDateTime startedAt;
+
     
     // Constructors
-    public Sprint() {}
+    public Sprint() {
+    }
+    
     
     public Sprint(String name, String goal, LocalDateTime startDate, LocalDateTime endDate, Project project) {
         this.name = name;
@@ -98,4 +110,18 @@ public class Sprint {
     
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public User getStartedBy() {
+        return startedBy;
+    }
+    public void setStartedBy(User startedBy) {
+        this.startedBy = startedBy;
+    }
+
+    public LocalDateTime getStartedAt() {
+        return startedAt;
+    }
+    public void setStartedAt(LocalDateTime startedAt) {
+        this.startedAt = startedAt;
+    }
 }

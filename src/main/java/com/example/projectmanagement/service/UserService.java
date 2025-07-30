@@ -46,6 +46,12 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
         return modelMapper.map(user, UserDto.class);
     }
+    @Transactional(readOnly = true)
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    }
+
     
     @Transactional(readOnly = true)
     public List<UserDto> getAllUsers() {

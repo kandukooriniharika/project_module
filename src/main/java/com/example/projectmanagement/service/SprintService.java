@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.example.projectmanagement.entity.User;
 
 @Service
 @Transactional
@@ -129,18 +130,32 @@ public class SprintService {
         sprintRepository.deleteById(id);
     }
 
-    public SprintDto startSprint(Long id) {
-        Sprint sprint = sprintRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sprint not found with id: " + id));
+    public SprintDto startSprint(Long id, User currentUser) {
+    // 1. Find the sprint
+    Sprint sprint = sprintRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Sprint not found with id: " + id));
 
-        if (sprint.getStatus() != Sprint.SprintStatus.PLANNING) {
-            throw new RuntimeException("Only planning sprints can be started");
-        }
-
-        sprint.setStatus(Sprint.SprintStatus.ACTIVE);
-        Sprint updatedSprint = sprintRepository.save(sprint);
-        return convertToDto(updatedSprint);
+    // 2. Ensure it's in PLANNING state
+    if (sprint.getStatus() != Sprint.SprintStatus.PLANNING) {
+        throw new RuntimeException("Only planning sprints can be started");
     }
+
+    // 3. Ensure no other ACTIVE sprint exists in this project
+    boolean hasActiveSprint = sprintRepository.existsActiveSprintInProject(sprint.getProject().getId());
+    if (hasActiveSprint) {
+        throw new RuntimeException("Another active sprint already exists in this project.");
+    }
+
+    // 4. Update sprint status, user, and time
+    sprint.setStatus(Sprint.SprintStatus.ACTIVE);
+    sprint.setStartedBy(currentUser);
+    sprint.setStartedAt(LocalDateTime.now());
+
+    // 5. Save and return
+    Sprint updatedSprint = sprintRepository.save(sprint);
+    return convertToDto(updatedSprint);
+}
+
 
     public SprintDto completeSprint(Long id) {
         Sprint sprint = sprintRepository.findById(id)

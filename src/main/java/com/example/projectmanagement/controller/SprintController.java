@@ -2,18 +2,29 @@ package com.example.projectmanagement.controller;
 
 import com.example.projectmanagement.dto.SprintDto;
 import com.example.projectmanagement.dto.TaskDto;
+// import com.example.projectmanagement.dto.UserDto;
 import com.example.projectmanagement.entity.Sprint;
+// import com.example.projectmanagement.security.CurrentUser;
 import com.example.projectmanagement.service.SprintService;
 import com.example.projectmanagement.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.jwt.Jwt;
+import com.example.projectmanagement.repository.UserRepository;
+
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+// import com.example.projectmanagement.service.UserService;
+import com.example.projectmanagement.entity.User;
+import org.springframework.security.core.Authentication;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +39,11 @@ public class SprintController {
     
     @Autowired
     private TaskService taskService;
+    
+
+    @Autowired
+private UserRepository userRepository;
+
     
     @PostMapping
     public ResponseEntity<SprintDto> createSprint(@Valid @RequestBody SprintDto sprintDto) {
@@ -99,11 +115,22 @@ public class SprintController {
         return ResponseEntity.ok(sprints);
     }
     
-    @PostMapping("/{id}/start")
-    public ResponseEntity<SprintDto> startSprint(@PathVariable Long id) {
-        SprintDto updatedSprint = sprintService.startSprint(id);
-        return ResponseEntity.ok(updatedSprint);
-    }
+    @PutMapping("/{sprintId}/start")
+public ResponseEntity<?> startSprint(
+    @PathVariable("sprintId") Long sprintId,
+    Authentication authentication
+) {
+    Jwt jwt = (Jwt) authentication.getPrincipal();  // ✅ Extract JWT token
+    String email = jwt.getClaimAsString("email");   // ✅ Safely get the email claim
+
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+    sprintService.startSprint(sprintId, user); // ✅ Use correct variable name
+    return ResponseEntity.ok("Sprint started");
+}
+
+
     
     @PostMapping("/{id}/complete")
     public ResponseEntity<SprintDto> completeSprint(@PathVariable Long id) {

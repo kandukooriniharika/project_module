@@ -30,4 +30,16 @@ public interface SprintRepository extends JpaRepository<Sprint, Long> {
     
     @Query("SELECT s FROM Sprint s WHERE s.endDate < :date AND s.status != 'COMPLETED'")
     List<Sprint> findOverdueSprints(@Param("date") LocalDateTime date);
+
+    @Query("SELECT s FROM Sprint s WHERE s.project.id = :projectId " +
+       "AND (:startDate <= s.endDate AND :endDate >= s.startDate)")
+    List<Sprint> findOverlappingSprints(
+        @Param("projectId") Long projectId,
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
+    @Query("SELECT COUNT(s) > 0 FROM Sprint s WHERE s.project.id = :projectId AND s.status = 'ACTIVE'")
+boolean existsActiveSprintInProject(@Param("projectId") Long projectId);
+
+
 }

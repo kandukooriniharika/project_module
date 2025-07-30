@@ -67,9 +67,9 @@ public class EpicController {
         return ResponseEntity.ok(epicService.getEpicsByProjectId(projectId));
     }
 
-    // Get epics by organization ID
-    @GetMapping("/organization/{organizationId}")
-    public ResponseEntity<List<EpicDto>> getEpicsByOrganizationId(@PathVariable Long organizationId) {
-        return ResponseEntity.ok(epicService.getEpicsByOrganizationId(organizationId));
-    }
+    // // Get epics by organization ID
+    // @GetMapping("/organization/{organizationId}")
+    // public ResponseEntity<List<EpicDto>> getEpicsByOrganizationId(@PathVariable Long organizationId) {
+    //     return ResponseEntity.ok(epicService.getEpicsByOrganizationId(organizationId));
+    // }
 }

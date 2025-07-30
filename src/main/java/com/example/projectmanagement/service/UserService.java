@@ -46,6 +46,12 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
         return modelMapper.map(user, UserDto.class);
     }
+    @Transactional(readOnly = true)
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    }
+
     
     @Transactional(readOnly = true)
     public List<UserDto> getAllUsers() {
@@ -86,8 +92,11 @@ public class UserService {
         
         existingUser.setName(userDto.getName());
         existingUser.setEmail(userDto.getEmail());
-        existingUser.setRole(userDto.getRole());
-        existingUser.setAvatar(userDto.getAvatar());
+        // Assuming userDto.getRoles() returns a List<String> and you want to set the first role
+        if (userDto.getRoles() != null && !userDto.getRoles().isEmpty()) {
+            existingUser.setRole(User.UserRole.valueOf(userDto.getRoles().get(0)));
+        }
+        
         
         User updatedUser = userRepository.save(existingUser);
         return modelMapper.map(updatedUser, UserDto.class);

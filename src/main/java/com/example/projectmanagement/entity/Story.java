@@ -1,5 +1,5 @@
 package com.example.projectmanagement.entity;
-
+// import com.example.projectmanagement.entity.Epic;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -50,7 +50,15 @@ public class Story {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id", nullable = false)
     private User reporter;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sprint_id", nullable = false)
+    private Sprint sprint;
+
     @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> tasks;
     
@@ -119,4 +127,20 @@ public class Story {
     
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public Sprint getSprint() {
+        return sprint;
+    }
+    
+    public void setSprint(Sprint sprint) {
+        this.sprint = sprint;
+    }
+    
+    public Project getProject() {
+        return project;
+    }
+    
+    public void setProject(Project project) {
+        this.project = project;
+    }
 }

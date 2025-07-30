@@ -3,6 +3,7 @@ package com.example.projectmanagement.controller;
 import com.example.projectmanagement.dto.TaskDto;
 import com.example.projectmanagement.dto.UserDto;
 import com.example.projectmanagement.entity.User;
+// import com.example.projectmanagement.security.CurrentUser;
 import com.example.projectmanagement.service.TaskService;
 import com.example.projectmanagement.service.UserService;
 import jakarta.validation.Valid;
@@ -86,4 +87,6 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    
 }

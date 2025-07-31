@@ -61,6 +61,16 @@ public ResponseEntity<Map<String, Object>> handleValidationException(ValidationE
     response.put("timestamp", LocalDateTime.now());
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
       
 
     public static class ErrorResponse {

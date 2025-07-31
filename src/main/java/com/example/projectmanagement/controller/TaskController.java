@@ -2,6 +2,9 @@ package com.example.projectmanagement.controller;
 
 import com.example.projectmanagement.dto.TaskDto;
 import com.example.projectmanagement.entity.Task;
+import com.example.projectmanagement.entity.User;
+import com.example.projectmanagement.security.annotation.RequireRole;
+import com.example.projectmanagement.security.annotation.RequireTaskAccess;
 import com.example.projectmanagement.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +27,23 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
     
+    // Project members and managers can create tasks
     @PostMapping
+    @RequireRole({User.UserRole.PRODUCT_OWNER, User.UserRole.SCRUM_MASTER, User.UserRole.DEVELOPER, User.UserRole.TESTER, User.UserRole.ADMIN})
     public ResponseEntity<TaskDto> createTask(@Valid @RequestBody TaskDto taskDto) {
         TaskDto createdTask = taskService.createTask(taskDto);
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
     
+    // Project members can view task details
     @GetMapping("/{id}")
+    @RequireTaskAccess({RequireTaskAccess.AccessType.PROJECT_MEMBER, RequireTaskAccess.AccessType.ADMIN})
     public ResponseEntity<TaskDto> getTaskById(@PathVariable Long id) {
         TaskDto task = taskService.getTaskById(id);
         return ResponseEntity.ok(task);
     }
     
+    // All authenticated users can search tasks (filtered by their accessible projects in service layer)
     @GetMapping
     public ResponseEntity<Page<TaskDto>> getAllTasks(
             @RequestParam(defaultValue = "0") int page,
@@ -54,33 +62,39 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
     
+    // All authenticated users can view backlog (filtered by accessible projects)
     @GetMapping("/backlog")
     public ResponseEntity<List<TaskDto>> getBacklogTasks() {
         List<TaskDto> tasks = taskService.getBacklogTasks();
         return ResponseEntity.ok(tasks);
     }
     
+    // All authenticated users can view tasks by status (filtered by accessible projects)
     @GetMapping("/status/{status}")
     public ResponseEntity<List<TaskDto>> getTasksByStatus(@PathVariable Task.TaskStatus status) {
         List<TaskDto> tasks = taskService.getTasksByStatus(status);
         return ResponseEntity.ok(tasks);
     }
     
+    // Assignees, reporters, project owners and admins can update tasks
     @PutMapping("/{id}")
+    @RequireTaskAccess({RequireTaskAccess.AccessType.ASSIGNEE_OR_REPORTER, RequireTaskAccess.AccessType.PROJECT_OWNER, RequireTaskAccess.AccessType.ADMIN})
     public ResponseEntity<TaskDto> updateTask(@PathVariable Long id, @Valid @RequestBody TaskDto taskDto) {
         TaskDto updatedTask = taskService.updateTask(id, taskDto);
         return ResponseEntity.ok(updatedTask);
     }
     
+    // Only project owners and admins can delete tasks
     @DeleteMapping("/{id}")
+    @RequireTaskAccess({RequireTaskAccess.AccessType.PROJECT_OWNER, RequireTaskAccess.AccessType.ADMIN})
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
    }
 
-  
-
+    // Project members and admins can view task counts for stories
     @GetMapping("/story/{storyId}/count")
+    @RequireRole({User.UserRole.PRODUCT_OWNER, User.UserRole.SCRUM_MASTER, User.UserRole.DEVELOPER, User.UserRole.TESTER, User.UserRole.ADMIN})
     public ResponseEntity<?> getTaskCountByStory(@PathVariable Long storyId) {
         long count = taskService.countTasksByStoryId(storyId);
         return ResponseEntity.ok(Map.of("storyId", storyId, "taskCount", count));

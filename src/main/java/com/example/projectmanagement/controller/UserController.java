@@ -3,6 +3,7 @@ package com.example.projectmanagement.controller;
 import com.example.projectmanagement.dto.TaskDto;
 import com.example.projectmanagement.dto.UserDto;
 import com.example.projectmanagement.entity.User;
+import com.example.projectmanagement.entity.Role;
 // import com.example.projectmanagement.security.CurrentUser;
 import com.example.projectmanagement.service.TaskService;
 import com.example.projectmanagement.service.UserService;
@@ -51,7 +52,7 @@ public class UserController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) User.UserRole role) {
+            @RequestParam(required = false) Role role) {
         
         Sort sort = sortDir.equalsIgnoreCase("desc") ? 
                 Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
@@ -63,7 +64,7 @@ public class UserController {
     
     @GetMapping("/role/{role}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserDto>> getUsersByRole(@PathVariable User.UserRole role) {
+    public ResponseEntity<List<UserDto>> getUsersByRole(@PathVariable Role role) {
         List<UserDto> users = userService.getUsersByRole(role);
         return ResponseEntity.ok(users);
     }

@@ -2,15 +2,19 @@ package com.example.projectmanagement.service;
 
 import com.example.projectmanagement.dto.UserDto;
 import com.example.projectmanagement.entity.User;
+import com.example.projectmanagement.entity.Role;
 import com.example.projectmanagement.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,12 +27,35 @@ public class UserService {
     @Autowired
     private ModelMapper modelMapper;
     
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
     public UserDto createUser(UserDto userDto) {
+        // Check if user with email already exists
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new RuntimeException("User with email " + userDto.getEmail() + " already exists");
         }
         
-        User user = modelMapper.map(userDto, User.class);
+        // Check if user with username already exists
+        if (userRepository.existsByUsername(userDto.getUsername())) {
+            throw new RuntimeException("User with username " + userDto.getUsername() + " already exists");
+        }
+        
+        User user = new User();
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        user.setUsername(userDto.getUsername());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        
+        // Convert role strings to Role enum
+        Set<Role> roles = new HashSet<>();
+        if (userDto.getRoles() != null) {
+            roles = userDto.getRoles().stream()
+                    .map(Role::valueOf)
+                    .collect(Collectors.toSet());
+        }
+        user.setRoles(roles);
+        
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserDto.class);
     }
@@ -46,12 +73,19 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
         return modelMapper.map(user, UserDto.class);
     }
+    
     @Transactional(readOnly = true)
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
 
+    @Transactional(readOnly = true)
+    public UserDto getUserByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+        return modelMapper.map(user, UserDto.class);
+    }
     
     @Transactional(readOnly = true)
     public List<UserDto> getAllUsers() {
@@ -67,7 +101,7 @@ public class UserService {
     }
     
     @Transactional(readOnly = true)
-    public List<UserDto> getUsersByRole(User.UserRole role) {
+    public List<UserDto> getUsersByRole(Role role) {
         return userRepository.findByRole(role).stream()
                 .map(user -> modelMapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
@@ -90,13 +124,28 @@ public class UserService {
             throw new RuntimeException("User with email " + userDto.getEmail() + " already exists");
         }
         
-        existingUser.setName(userDto.getName());
-        existingUser.setEmail(userDto.getEmail());
-        // Assuming userDto.getRoles() returns a List<String> and you want to set the first role
-        if (userDto.getRoles() != null && !userDto.getRoles().isEmpty()) {
-            existingUser.setRole(User.UserRole.valueOf(userDto.getRoles().get(0)));
+        // Check if username is being changed and if it already exists
+        if (!existingUser.getUsername().equals(userDto.getUsername()) && 
+            userRepository.existsByUsername(userDto.getUsername())) {
+            throw new RuntimeException("User with username " + userDto.getUsername() + " already exists");
         }
         
+        existingUser.setName(userDto.getName());
+        existingUser.setEmail(userDto.getEmail());
+        existingUser.setUsername(userDto.getUsername());
+        
+        // Update password if provided
+        if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        }
+        
+        // Convert role strings to Role enum
+        if (userDto.getRoles() != null) {
+            Set<Role> roles = userDto.getRoles().stream()
+                    .map(Role::valueOf)
+                    .collect(Collectors.toSet());
+            existingUser.setRoles(roles);
+        }
         
         User updatedUser = userRepository.save(existingUser);
         return modelMapper.map(updatedUser, UserDto.class);
@@ -110,7 +159,7 @@ public class UserService {
     }
     
     @Transactional(readOnly = true)
-    public Page<UserDto> searchUsers(String name, User.UserRole role, Pageable pageable) {
+    public Page<UserDto> searchUsers(String name, Role role, Pageable pageable) {
         if (name != null && role != null) {
             return userRepository.findByNameContaining(name, pageable)
                     .map(user -> modelMapper.map(user, UserDto.class));
@@ -118,7 +167,7 @@ public class UserService {
             return userRepository.findByNameContaining(name, pageable)
                     .map(user -> modelMapper.map(user, UserDto.class));
         } else if (role != null) {
-            return userRepository.findByRole(role, pageable)
+            return userRepository.findByRolePaginated(role, pageable)
                     .map(user -> modelMapper.map(user, UserDto.class));
         } else {
             return userRepository.findAll(pageable)

@@ -18,6 +18,13 @@ public class UserDto {
     @NotBlank(message = "Email is required")
     private String email;
 
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    private String username;
+
+    @Size(min = 6, message = "Password must be at least 6 characters long")
+    private String password;
+
     private List<String> roles;
 
     // Constructors
@@ -29,9 +36,10 @@ public class UserDto {
         this.roles = roles;
     }
 
-    public UserDto(String name, String email, List<String> roles) {
+    public UserDto(String name, String email, String username, List<String> roles) {
         this.name = name;
         this.email = email;
+        this.username = username;
         this.roles = roles;
     }
 
@@ -44,6 +52,12 @@ public class UserDto {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
     public List<String> getRoles() { return roles; }
     public void setRoles(List<String> roles) { this.roles = roles; }

@@ -85,4 +85,10 @@ public class TaskController {
         long count = taskService.countTasksByStoryId(storyId);
         return ResponseEntity.ok(Map.of("storyId", storyId, "taskCount", count));
     }
+    @GetMapping("/assignee/{assigneeId}")
+    public ResponseEntity<List<TaskDto>> getTasksByAssignee(@PathVariable Long assigneeId) {
+        List<TaskDto> tasks = taskService.getTasksByAssignee(assigneeId);
+        return ResponseEntity.ok(tasks);
+    }
+
 }

@@ -1,9 +1,10 @@
 package com.example.projectmanagement.service;
 
 import com.example.projectmanagement.dto.EpicDto;
+import com.example.projectmanagement.dto.StoryDto;
 import com.example.projectmanagement.entity.Epic;
 import com.example.projectmanagement.entity.Project;
-
+import com.example.projectmanagement.entity.Story;
 import com.example.projectmanagement.entity.Epic.EpicStatus;
 import com.example.projectmanagement.entity.Epic.Priority;
 import com.example.projectmanagement.repository.EpicRepository;
@@ -185,4 +186,16 @@ public class EpicService {
     public Page<EpicDto> searchEpics(String name, Priority priority, Long projectId, Pageable pageable) {
         throw new UnsupportedOperationException("Unimplemented method 'searchEpics'");
     }
+
+//     public List<StoryDto> getStoriesByEpicId(Long epicId) {
+//     Epic epic = epicRepository.findById(epicId)
+//         .orElseThrow(() -> new RuntimeException("Epic not found with ID: " + epicId));
+
+//     List<Story> stories = storyRepository.findByEpic(epic);  // or findByEpicId(epicId)
+
+//     return stories.stream()
+//         .map(story -> modelMapper.map(story, StoryDto.class))
+//         .collect(Collectors.toList());
+// }
+
 }

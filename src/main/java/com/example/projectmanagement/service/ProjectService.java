@@ -60,10 +60,30 @@ public class ProjectService {
         throw new ValidationException(errors);
     }
 
-    User owner = userRepository.findById(projectDto.getOwnerId()).get();
-    Project project = modelMapper.map(projectDto, Project.class);
+    // 💡 No modelMapper here
+    Project project = new Project();
+    project.setName(projectDto.getName());
+    project.setProjectKey(projectDto.getProjectKey());
+    project.setDescription(projectDto.getDescription());
+    project.setStartDate(projectDto.getStartDate());
+    project.setEndDate(projectDto.getEndDate());
+    project.setStatus(projectDto.getStatus() != null ? projectDto.getStatus() : Project.ProjectStatus.ACTIVE);
+
+    // Set owner
+    User owner = userRepository.findById(projectDto.getOwnerId())
+        .orElseThrow(() -> new RuntimeException("Owner not found with ID: " + projectDto.getOwnerId()));
     project.setOwner(owner);
 
+    // Set members manually
+    if (projectDto.getMembers() != null) {
+        List<User> members = projectDto.getMembers().stream()
+            .map(userDto -> userRepository.findById(userDto.getId())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userDto.getId())))
+            .collect(Collectors.toList());
+        project.setMembers(members);
+    }
+
+    // Save and return
     return convertToDto(projectRepository.save(project));
 }
 

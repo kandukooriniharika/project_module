@@ -130,14 +130,14 @@ public class SprintService {
         sprintRepository.deleteById(id);
     }
 
-    public SprintDto startSprint(Long id, User currentUser) {
+    public SprintDto startSprint(Long id) {
     // 1. Find the sprint
     Sprint sprint = sprintRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Sprint not found with id: " + id));
 
-    // 2. Ensure it's in PLANNING state
+    // 2. Ensure it's in PLANNED state (not PLANNING, assuming typo)
     if (sprint.getStatus() != Sprint.SprintStatus.PLANNING) {
-        throw new RuntimeException("Only planning sprints can be started");
+        throw new RuntimeException("Only planned sprints can be started");
     }
 
     // 3. Ensure no other ACTIVE sprint exists in this project
@@ -146,9 +146,8 @@ public class SprintService {
         throw new RuntimeException("Another active sprint already exists in this project.");
     }
 
-    // 4. Update sprint status, user, and time
+    // 4. Update sprint status and time (remove startedBy since no user)
     sprint.setStatus(Sprint.SprintStatus.ACTIVE);
-    sprint.setStartedBy(currentUser);
     sprint.setStartedAt(LocalDateTime.now());
 
     // 5. Save and return

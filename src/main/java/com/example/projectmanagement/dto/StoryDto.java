@@ -25,13 +25,13 @@ public class StoryDto {
     @Size(max = 2000, message = "Acceptance criteria cannot exceed 2000 characters")
     private String acceptanceCriteria;
     
-    @NotNull(message = "Epic ID is required")
+    
     private Long epicId;
     
     @NotNull(message = "Reporter ID is required")
     private Long reporterId;
 
-    @NotNull(message = "Sprint ID is required")
+    
     private Long sprintId;
  
     @NotNull(message = "Project ID is required")

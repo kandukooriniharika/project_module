@@ -1,6 +1,7 @@
 package com.example.projectmanagement.controller;
 
 import com.example.projectmanagement.dto.EpicDto;
+import com.example.projectmanagement.dto.StoryDto;
 import com.example.projectmanagement.service.EpicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +67,11 @@ public class EpicController {
     public ResponseEntity<List<EpicDto>> getEpicsByProjectId(@PathVariable Long projectId) {
         return ResponseEntity.ok(epicService.getEpicsByProjectId(projectId));
     }
+
+    // @GetMapping("/stories/{epicId}")
+    // public ResponseEntity<List<StoryDto>> getStoriesByEpicId(@PathVariable Long epicId) {
+    //     return ResponseEntity.ok(epicService.getStoriesByEpicId(epicId));
+    // }
 
     // // Get epics by organization ID
     // @GetMapping("/organization/{organizationId}")

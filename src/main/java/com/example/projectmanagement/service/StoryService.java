@@ -54,13 +54,26 @@ public class StoryService {
  
     public StoryDto createStory(StoryDto storyDto) {
 
-        Epic epic = epicRepository.findById(storyDto.getEpicId())
+        // Epic epic = epicRepository.findById(storyDto.getEpicId())
 
-                .orElseThrow(() -> new RuntimeException("Epic not found with id: " + storyDto.getEpicId()));
+        //         .orElseThrow(() -> new RuntimeException("Epic not found with id: " + storyDto.getEpicId()));
  
-        Sprint sprint = sprintRepository.findById(storyDto.getSprintId())
+        // Sprint sprint = sprintRepository.findById(storyDto.getSprintId())
 
-                .orElseThrow(() -> new RuntimeException("Sprint not found with id: " + storyDto.getSprintId()));
+        //         .orElseThrow(() -> new RuntimeException("Sprint not found with id: " + storyDto.getSprintId()));
+
+        Epic epic = null;
+        if (storyDto.getEpicId() != null) {
+            epic = epicRepository.findById(storyDto.getEpicId())
+                    .orElseThrow(() -> new RuntimeException("Epic not found with id: " + storyDto.getEpicId()));
+        }
+
+        Sprint sprint = null;
+        if (storyDto.getSprintId() != null) {
+            sprint = sprintRepository.findById(storyDto.getSprintId())
+                    .orElseThrow(() -> new RuntimeException("Sprint not found with id: " + storyDto.getSprintId()));
+        }
+
  
         Project project = projectRepository.findById(storyDto.getProjectId())
 
@@ -270,26 +283,56 @@ public class StoryService {
     }
  
     private StoryDto convertToDto(Story story) {
-
         StoryDto dto = modelMapper.map(story, StoryDto.class);
 
-        dto.setEpicId(story.getEpic().getId());
+        if (story.getEpic() != null) {
+            dto.setEpicId(story.getEpic().getId());
+        }
 
-        dto.setReporterId(story.getReporter().getId());
+        if (story.getSprint() != null) {
+            dto.setSprintId(story.getSprint().getId());
+        }
 
-        dto.setSprintId(story.getSprint().getId());
+        if (story.getProject() != null) {
+            dto.setProjectId(story.getProject().getId());
+        }
 
-        dto.setProjectId(story.getProject().getId());
+        if (story.getReporter() != null) {
+            dto.setReporterId(story.getReporter().getId());
+        }
 
         if (story.getAssignee() != null) {
-
             dto.setAssigneeId(story.getAssignee().getId());
-
         }
 
         return dto;
-
     }
+
+    public List<StoryDto> getStoriesByProjectId(Long projectId) {
+        List<Story> stories = storyRepository.findByProjectId(projectId);
+        return stories.stream()
+                    .map(this::convertToDto) // ✅ NOT modelMapper.map(...)
+                    .collect(Collectors.toList());
+    }
+
+    public void assignStoryToSprint(Long storyId, Long sprintId) {
+        Story story = storyRepository.findById(storyId)
+                .orElseThrow(() -> new RuntimeException("Story not found with id: " + storyId));
+
+        if (sprintId != null) {
+            Sprint sprint = sprintRepository.findById(sprintId)
+                    .orElseThrow(() -> new RuntimeException("Sprint not found with id: " + sprintId));
+            story.setSprint(sprint);
+            story.setProject(sprint.getProject()); // ✅ Add this line
+        } else {
+            story.setSprint(null);
+            story.setProject(null); // ✅ Also clear project if unassigned
+        }
+
+        storyRepository.save(story);
+    }
+
+
 
 }
 

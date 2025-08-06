@@ -129,10 +129,14 @@ private UserRepository userRepository;
 //     sprintService.startSprint(sprintId, user); // ✅ Use correct variable name
 //     return ResponseEntity.ok("Sprint started");
 // }
+    @PutMapping("/{id}/start")
+    public ResponseEntity<SprintDto> startSprint(@PathVariable Long id) {
+        System.out.println("Hit /api/sprints/" + id + "/start endpoint");
+        SprintDto updatedSprint = sprintService.startSprint(id);
+        return ResponseEntity.ok(updatedSprint);
+    }
 
-
-    
-    @PostMapping("/{id}/complete")
+    @PutMapping("/{id}/complete")
     public ResponseEntity<SprintDto> completeSprint(@PathVariable Long id) {
         SprintDto updatedSprint = sprintService.completeSprint(id);
         return ResponseEntity.ok(updatedSprint);

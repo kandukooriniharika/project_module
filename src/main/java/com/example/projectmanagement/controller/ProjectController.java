@@ -3,11 +3,13 @@ package com.example.projectmanagement.controller;
 import com.example.projectmanagement.dto.EpicDto;
 import com.example.projectmanagement.dto.ProjectDto;
 import com.example.projectmanagement.dto.SprintDto;
+import com.example.projectmanagement.dto.StoryDto;
 import com.example.projectmanagement.dto.TaskDto;
 import com.example.projectmanagement.entity.Project;
 import com.example.projectmanagement.service.EpicService;
 import com.example.projectmanagement.service.ProjectService;
 import com.example.projectmanagement.service.SprintService;
+import com.example.projectmanagement.service.StoryService;
 import com.example.projectmanagement.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,9 @@ public class ProjectController {
 
     @Autowired
     private TaskService taskService;
+    
+    @Autowired
+    private StoryService storyService;
 
     // ✅ CREATE a new project
     @PostMapping
@@ -138,4 +143,9 @@ public ResponseEntity<ProjectDto> unarchiveProject(@PathVariable Long projectId)
         ProjectDto updatedProject = projectService.removeMemberFromProject(projectId, userId);
         return ResponseEntity.ok(updatedProject);
     }
+    @GetMapping("/{projectId}/stories")
+public ResponseEntity<List<StoryDto>> getStoriesByProject(@PathVariable Long projectId) {
+    List<StoryDto> stories = storyService.getStoriesByProjectId(projectId);
+    return ResponseEntity.ok(stories);
+}
 }

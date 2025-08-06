@@ -11,12 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
  
 @RestController
 
 @RequestMapping("/api/stories")
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 
 public class StoryController {
  
@@ -157,6 +158,17 @@ public class StoryController {
     public ResponseEntity<List<StoryDto>> getStoriesBySprint(@PathVariable Long sprintId) {
         return ResponseEntity.ok(storyService.getStoriesBySprint(sprintId));
     }
+    @PutMapping("/{storyId}/assign-sprint")
+    public ResponseEntity<String> assignStoryToSprint(
+            @PathVariable Long storyId,
+            @RequestBody(required = false) Map<String, Long> request) {
+
+        Long sprintId = request != null ? request.get("sprintId") : null;
+
+        storyService.assignStoryToSprint(storyId, sprintId);
+        return ResponseEntity.ok("Sprint assignment updated successfully.");
+    }
+
 
 
 }

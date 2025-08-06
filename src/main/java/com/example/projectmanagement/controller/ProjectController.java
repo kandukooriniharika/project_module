@@ -7,6 +7,7 @@ import com.example.projectmanagement.dto.StoryDto;
 import com.example.projectmanagement.dto.TaskDto;
 import com.example.projectmanagement.entity.Project;
 import com.example.projectmanagement.service.EpicService;
+import com.example.projectmanagement.service.EmailService;
 import com.example.projectmanagement.service.ProjectService;
 import com.example.projectmanagement.service.SprintService;
 import com.example.projectmanagement.service.StoryService;
@@ -39,6 +40,9 @@ public class ProjectController {
     
     @Autowired
     private StoryService storyService;
+    
+    @Autowired
+    private EmailService emailService;
 
     // ✅ CREATE a new project
     @PostMapping
@@ -148,4 +152,16 @@ public ResponseEntity<List<StoryDto>> getStoriesByProject(@PathVariable Long pro
     List<StoryDto> stories = storyService.getStoriesByProjectId(projectId);
     return ResponseEntity.ok(stories);
 }
+
+    // ✅ Test email functionality
+    @PostMapping("/test-email")
+    public ResponseEntity<String> sendTestEmail(@RequestParam String email) {
+        try {
+            emailService.sendTestEmail(email);
+            return ResponseEntity.ok("Test email sent successfully to " + email);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to send test email: " + e.getMessage());
+        }
+    }
 }

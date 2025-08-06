@@ -30,6 +30,9 @@ public class ProjectService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private EmailService emailService;
+
   public ProjectDto createProject(ProjectDto projectDto) {
     List<String> errors = new ArrayList<>();
 
@@ -83,8 +86,23 @@ public class ProjectService {
         project.setMembers(members);
     }
 
-    // Save and return
-    return convertToDto(projectRepository.save(project));
+    // Save the project first
+    Project savedProject = projectRepository.save(project);
+    
+    // Send email notifications to newly assigned members
+    if (savedProject.getMembers() != null) {
+        for (User member : savedProject.getMembers()) {
+            try {
+                emailService.sendProjectAssignmentNotification(member, savedProject);
+            } catch (Exception e) {
+                // Log the error but don't fail the operation
+                System.err.println("Failed to send email notification to " + member.getEmail() + 
+                                 " for project creation: " + e.getMessage());
+            }
+        }
+    }
+
+    return convertToDto(savedProject);
 }
 
 
@@ -203,6 +221,15 @@ public class ProjectService {
         if (!project.getMembers().contains(user)) {
             project.getMembers().add(user);
             projectRepository.save(project);
+            
+            // Send email notification to the user about project assignment
+            try {
+                emailService.sendProjectAssignmentNotification(user, project);
+            } catch (Exception e) {
+                // Log the error but don't fail the operation
+                System.err.println("Failed to send email notification to " + user.getEmail() + 
+                                 " for project assignment: " + e.getMessage());
+            }
         }
 
         return convertToDto(project);

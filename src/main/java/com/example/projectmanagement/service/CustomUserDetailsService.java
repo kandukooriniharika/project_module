@@ -1,0 +1,49 @@
+package com.example.projectmanagement.service;
+
+import com.example.projectmanagement.entity.User;
+import com.example.projectmanagement.entity.Role;
+import com.example.projectmanagement.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+ * Custom UserDetailsService implementation for Spring Security
+ * Loads user details and their roles for authentication and authorization
+ */
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                mapRolesToAuthorities(user.getRoles())
+        );
+    }
+
+    /**
+     * Maps roles to Spring Security authorities
+     * Adds "ROLE_" prefix as required by Spring Security
+     */
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<Role> roles) {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+                .collect(Collectors.toList());
+    }
+}

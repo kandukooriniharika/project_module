@@ -3,6 +3,7 @@ package com.example.projectmanagement.controller;
 import com.example.projectmanagement.dto.TaskDto;
 import com.example.projectmanagement.dto.UserDto;
 import com.example.projectmanagement.entity.User;
+import com.example.projectmanagement.entity.Role;
 // import com.example.projectmanagement.security.CurrentUser;
 import com.example.projectmanagement.service.TaskService;
 import com.example.projectmanagement.service.UserService;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +32,7 @@ public class UserController {
     private TaskService taskService;
     
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
         UserDto createdUser = userService.createUser(userDto);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
@@ -42,13 +45,14 @@ public class UserController {
     }
     
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SCRUM_MASTER')")
     public ResponseEntity<Page<UserDto>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) User.UserRole role) {
+            @RequestParam(required = false) Role role) {
         
         Sort sort = sortDir.equalsIgnoreCase("desc") ? 
                 Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
@@ -59,7 +63,8 @@ public class UserController {
     }
     
     @GetMapping("/role/{role}")
-    public ResponseEntity<List<UserDto>> getUsersByRole(@PathVariable User.UserRole role) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserDto>> getUsersByRole(@PathVariable Role role) {
         List<UserDto> users = userService.getUsersByRole(role);
         return ResponseEntity.ok(users);
     }

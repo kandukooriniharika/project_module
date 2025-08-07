@@ -34,6 +34,8 @@ public interface StoryRepository extends JpaRepository<Story, Long> {
     
     @Query("SELECT s FROM Story s WHERE s.priority = :priority")
     Page<Story> findByPriority(@Param("priority") Story.Priority priority, Pageable pageable);
+    
+long countByStatus(Story.StoryStatus status);
 
     @Query("SELECT s FROM Story s " +
         "WHERE (:title IS NULL OR LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%'))) " +

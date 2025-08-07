@@ -30,5 +30,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT p FROM Project p WHERE p.status = :status")
     Page<Project> findByStatus(@Param("status") Project.ProjectStatus status, Pageable pageable);
     
+    @Query("SELECT COUNT(p) FROM Project p WHERE p.owner IS NULL")
+long countProjectsWithoutOwner();
+
+long countByOwnerIsNull();  // if `owner` is nullable
+
+    
     boolean existsByProjectKey(String projectKey);
 }

@@ -1,8 +1,6 @@
 package com.example.projectmanagement.dto;
 
 import com.example.projectmanagement.entity.Project;
-// import com.example.projectmanagement.entity.User;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -30,11 +28,14 @@ public class ProjectDto {
     @NotNull(message = "Owner is required")
     private Long ownerId;
 
+    // ✅ Add this field to match the frontend's payload
+    private List<Long> memberIds;
+
     private UserDto owner;
     private List<UserDto> members;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
@@ -47,52 +48,43 @@ public class ProjectDto {
         this.ownerId = ownerId;
     }
 
-    // Getters and Setters...
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
-
-    
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    
+
     public String getProjectKey() { return projectKey; }
     public void setProjectKey(String projectKey) { this.projectKey = projectKey; }
-    
+
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-    
+
     public Project.ProjectStatus getStatus() { return status; }
     public void setStatus(Project.ProjectStatus status) { this.status = status; }
-    
+
     public Long getOwnerId() { return ownerId; }
     public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
-    
+
+    public List<Long> getMemberIds() { return memberIds; }
+    public void setMemberIds(List<Long> memberIds) { this.memberIds = memberIds; }
+
     public UserDto getOwner() { return owner; }
     public void setOwner(UserDto owner) { this.owner = owner; }
-    
+
     public List<UserDto> getMembers() { return members; }
     public void setMembers(List<UserDto> members) { this.members = members; }
-    
+
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    
+
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public LocalDateTime getStartDate() { return startDate; }
+    public void setStartDate(LocalDateTime startDate) { this.startDate = startDate; }
+
+    public LocalDateTime getEndDate() { return endDate; }
+    public void setEndDate(LocalDateTime endDate) { this.endDate = endDate; }
 }

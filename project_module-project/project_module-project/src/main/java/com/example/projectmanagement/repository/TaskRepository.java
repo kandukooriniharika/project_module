@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -46,4 +47,11 @@ long countByStoryId(@Param("storyId") Long storyId);
     
     @Query("SELECT t FROM Task t WHERE t.sprint IS NULL AND t.status IN ('BACKLOG', 'TODO')")
     List<Task> findBacklogTasks();
+
+    @Query("SELECT COUNT(t) FROM Task t WHERE t.dueDate BETWEEN CURRENT_TIMESTAMP AND :futureDate")
+long countTasksDueSoon(@Param("futureDate") LocalDateTime futureDate);
+long countByStatus(Task.TaskStatus status);
+
+long countByDueDateBetween(LocalDateTime start, LocalDateTime end);
+
 }

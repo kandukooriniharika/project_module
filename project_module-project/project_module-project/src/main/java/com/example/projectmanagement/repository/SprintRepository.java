@@ -40,6 +40,11 @@ public interface SprintRepository extends JpaRepository<Sprint, Long> {
     );
     @Query("SELECT COUNT(s) > 0 FROM Sprint s WHERE s.project.id = :projectId AND s.status = 'ACTIVE'")
 boolean existsActiveSprintInProject(@Param("projectId") Long projectId);
+@Query("SELECT COUNT(s) FROM Sprint s WHERE s.endDate BETWEEN CURRENT_TIMESTAMP AND :futureDate")
+long countSprintsEndingSoon(@Param("futureDate") LocalDateTime futureDate);
+
+long countByEndDateBetween(LocalDateTime start, LocalDateTime end);
+
 
 
 }

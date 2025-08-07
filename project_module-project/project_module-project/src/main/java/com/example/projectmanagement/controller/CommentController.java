@@ -16,60 +16,48 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    // ----------------- Add Comments -----------------
-
     @PostMapping("/task/{taskId}")
     public ResponseEntity<CommentDto> addCommentToTask(
             @PathVariable Long taskId,
-            @RequestBody CommentDto commentDto
+            @RequestParam Long userId,
+            @RequestBody String content
     ) {
-        CommentDto saved = commentService.addCommentToTask(taskId, commentDto);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        return ResponseEntity.ok(commentService.addCommentToTask(taskId, userId, content));
     }
-
-    @PostMapping("/story/{storyId}")
-    public ResponseEntity<CommentDto> addCommentToStory(
-            @PathVariable Long storyId,
-            @RequestBody CommentDto commentDto
-    ) {
-        CommentDto saved = commentService.addCommentToStory(storyId, commentDto);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/epic/{epicId}")
-    public ResponseEntity<CommentDto> addCommentToEpic(
-            @PathVariable Long epicId,
-            @RequestBody CommentDto commentDto
-    ) {
-        CommentDto saved = commentService.addCommentToEpic(epicId, commentDto);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
-    }
-
-    // ----------------- Get Comments -----------------
 
     @GetMapping("/task/{taskId}")
     public ResponseEntity<List<CommentDto>> getCommentsByTask(@PathVariable Long taskId) {
         return ResponseEntity.ok(commentService.getCommentsByTaskId(taskId));
     }
 
+    @PostMapping("/story/{storyId}")
+public ResponseEntity<CommentDto> addCommentToStory(
+        @PathVariable Long storyId,
+        @RequestParam Long userId,
+        @RequestBody CommentDto commentDto) {
+    CommentDto savedComment = commentService.addCommentToStory(storyId, userId, commentDto);
+    return new ResponseEntity<>(savedComment, HttpStatus.CREATED);
+}
+
+
     @GetMapping("/story/{storyId}")
     public ResponseEntity<List<CommentDto>> getCommentsByStory(@PathVariable Long storyId) {
         return ResponseEntity.ok(commentService.getCommentsByStoryId(storyId));
+    }
+
+    @PostMapping("/epic/{epicId}")
+    public ResponseEntity<CommentDto> addCommentToEpic(
+            @PathVariable Long epicId,
+            @RequestParam Long userId,
+            @RequestBody String content
+    ) {
+        return ResponseEntity.ok(commentService.addCommentToEpic(epicId, userId, content));
     }
 
     @GetMapping("/epic/{epicId}")
     public ResponseEntity<List<CommentDto>> getCommentsByEpic(@PathVariable Long epicId) {
         return ResponseEntity.ok(commentService.getCommentsByEpicId(epicId));
     }
-
-    // ----------------- Replies -----------------
-
-    @GetMapping("/replies/{parentId}")
-    public ResponseEntity<List<CommentDto>> getReplies(@PathVariable Long parentId) {
-        return ResponseEntity.ok(commentService.getRepliesByParentId(parentId));
-    }
-
-    // ----------------- Delete -----------------
 
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(

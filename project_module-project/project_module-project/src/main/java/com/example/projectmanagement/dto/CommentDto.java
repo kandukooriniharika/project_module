@@ -9,7 +9,6 @@ public class CommentDto {
     private String userName;
     private LocalDateTime createdAt;
     private String text;
-    private Long parentId; // For replies to comments
 
     // Getters and Setters
 
@@ -69,11 +68,5 @@ public class CommentDto {
     // Setter
     public void setText(String text) {
         this.text = text;
-    }
-    public Long getParentId() {
-        return parentId;
-    }
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
     }
 }

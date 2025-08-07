@@ -20,66 +20,49 @@ public class CommentService {
     private final EpicRepository epicRepository;
     private final UserRepository userRepository;
 
-    // ------------- Add Comment to TASK -------------
-    public CommentDto addCommentToTask(Long taskId, CommentDto dto) {
+    public CommentDto addCommentToTask(Long taskId, Long userId, String content) {
         Task task = getTaskById(taskId);
-        User user = getUserById(dto.getUserId());
-
-        Comment comment = buildComment(user, dto.getContent(), dto.getParentId());
+        User user = getUserById(userId);
+        Comment comment = buildComment(user, content);
         comment.setTask(task);
-
         return mapToDto(commentRepository.save(comment));
     }
 
-    // ------------- Add Comment to STORY -------------
-    public CommentDto addCommentToStory(Long storyId, CommentDto dto) {
+    public CommentDto addCommentToStory(Long storyId, Long userId, CommentDto commentDto) {
         Story story = getStoryById(storyId);
-        User user = getUserById(dto.getUserId());
+        User user = getUserById(userId);
+        Comment comment = buildComment(user, commentDto.getText());
 
-        Comment comment = buildComment(user, dto.getContent(), dto.getParentId());
         comment.setStory(story);
-
         return mapToDto(commentRepository.save(comment));
     }
 
-    // ------------- Add Comment to EPIC -------------
-    public CommentDto addCommentToEpic(Long epicId, CommentDto dto) {
+    public CommentDto addCommentToEpic(Long epicId, Long userId, String content) {
         Epic epic = getEpicById(epicId);
-        User user = getUserById(dto.getUserId());
-
-        Comment comment = buildComment(user, dto.getContent(), dto.getParentId());
+        User user = getUserById(userId);
+        Comment comment = buildComment(user, content);
         comment.setEpic(epic);
-
         return mapToDto(commentRepository.save(comment));
     }
 
-    // ------------- Fetch Comments by Entities -------------
     public List<CommentDto> getCommentsByTaskId(Long taskId) {
-        return commentRepository.findByTaskIdAndParentIsNull(taskId).stream()
+        return commentRepository.findByTaskId(taskId).stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
     public List<CommentDto> getCommentsByStoryId(Long storyId) {
-        return commentRepository.findByStoryIdAndParentIsNull(storyId).stream()
+        return commentRepository.findByStoryId(storyId).stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
     public List<CommentDto> getCommentsByEpicId(Long epicId) {
-        return commentRepository.findByEpicIdAndParentIsNull(epicId).stream()
+        return commentRepository.findByEpicId(epicId).stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    // ------------- Fetch Replies to a Comment -------------
-    public List<CommentDto> getRepliesByParentId(Long parentId) {
-        return commentRepository.findByParentId(parentId).stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-    }
-
-    // ------------- Delete Comment -------------
     public void deleteComment(Long commentId, Long userId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
@@ -91,19 +74,11 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    // ------------- Helpers -------------
-    private Comment buildComment(User user, String content, Long parentId) {
+    private Comment buildComment(User user, String content) {
         Comment comment = new Comment();
         comment.setUser(user);
         comment.setContent(content);
         comment.setCreatedAt(LocalDateTime.now());
-
-        if (parentId != null) {
-            Comment parent = commentRepository.findById(parentId)
-                    .orElseThrow(() -> new RuntimeException("Parent comment not found with ID: " + parentId));
-            comment.setParent(parent);
-        }
-
         return comment;
     }
 
@@ -134,9 +109,6 @@ public class CommentService {
         dto.setUserName(comment.getUser().getName());
         dto.setContent(comment.getContent());
         dto.setCreatedAt(comment.getCreatedAt());
-        if (comment.getParent() != null) {
-            dto.setParentId(comment.getParent().getId());
-        }
         return dto;
     }
 }

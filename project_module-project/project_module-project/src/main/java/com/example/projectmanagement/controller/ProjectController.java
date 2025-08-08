@@ -138,4 +138,10 @@ public ResponseEntity<ProjectDto> unarchiveProject(@PathVariable Long projectId)
         ProjectDto updatedProject = projectService.removeMemberFromProject(projectId, userId);
         return ResponseEntity.ok(updatedProject);
     }
+
+    @GetMapping("/overdue")
+    public ResponseEntity<List<ProjectDto>> getOverdueProjects() {
+        List<ProjectDto> overdueProjects = projectService.getOverdueProjects();
+        return ResponseEntity.ok(overdueProjects);
+    }
 }

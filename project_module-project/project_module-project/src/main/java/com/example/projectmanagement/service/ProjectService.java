@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +48,7 @@ public class ProjectService {
         errors.add("Start date is required.");
     }
 
+    // endDate is optional, but if provided, must be after or equal to startDate
     if (projectDto.getStartDate() != null && projectDto.getEndDate() != null &&
         projectDto.getStartDate().isAfter(projectDto.getEndDate())) {
         errors.add("Start date cannot be after end date.");
@@ -64,6 +66,7 @@ public class ProjectService {
     Project project = modelMapper.map(projectDto, Project.class);
     project.setOwner(owner);
 
+    // endDate is optional, so no need to set if null
     return convertToDto(projectRepository.save(project));
 }
 
@@ -119,50 +122,51 @@ public class ProjectService {
     }
 
     public ProjectDto updateProject(Long id, ProjectDto updatedDto) {
-    List<String> errors = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
 
-    Project existing = projectRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
+        Project existing = projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
 
-    Project.ProjectStatus existingStatus = existing.getStatus();
-    Project.ProjectStatus newStatus = updatedDto.getStatus();
+        Project.ProjectStatus existingStatus = existing.getStatus();
+        Project.ProjectStatus newStatus = updatedDto.getStatus();
 
-    if (existingStatus == Project.ProjectStatus.ARCHIVED && newStatus != Project.ProjectStatus.ACTIVE) {
-        errors.add("Cannot update an archived project unless status is changed to ACTIVE.");
-    }
-
-    if (updatedDto.getStartDate() != null && updatedDto.getEndDate() != null &&
-        updatedDto.getStartDate().isAfter(updatedDto.getEndDate())) {
-        errors.add("Start date cannot be after end date.");
-    }
-
-    if (updatedDto.getOwner() != null && !userRepository.existsById(updatedDto.getOwner().getId())) {
-        errors.add("Owner not found with id: " + updatedDto.getOwner().getId());
-    }
-
-    if (!errors.isEmpty()) {
-        throw new ValidationException(errors);
-    }
-
-    // Apply changes
-    if (existingStatus == Project.ProjectStatus.ARCHIVED && newStatus == Project.ProjectStatus.ACTIVE) {
-        existing.setStatus(Project.ProjectStatus.ACTIVE);
-    } else {
-        existing.setName(updatedDto.getName());
-        existing.setDescription(updatedDto.getDescription());
-        existing.setProjectKey(updatedDto.getProjectKey());
-        existing.setStartDate(updatedDto.getStartDate());
-        existing.setEndDate(updatedDto.getEndDate());
-        existing.setStatus(updatedDto.getStatus());
-
-        if (updatedDto.getOwner() != null) {
-            User owner = userRepository.findById(updatedDto.getOwner().getId()).get();
-            existing.setOwner(owner);
+        if (existingStatus == Project.ProjectStatus.ARCHIVED && newStatus != Project.ProjectStatus.ACTIVE) {
+            errors.add("Cannot update an archived project unless status is changed to ACTIVE.");
         }
-    }
 
-    return convertToDto(projectRepository.save(existing));
-}
+        // Only validate if both dates are present
+        if (updatedDto.getStartDate() != null && updatedDto.getEndDate() != null &&
+            updatedDto.getStartDate().isAfter(updatedDto.getEndDate())) {
+            errors.add("Start date cannot be after end date.");
+        }
+
+        if (updatedDto.getOwner() != null && !userRepository.existsById(updatedDto.getOwner().getId())) {
+            errors.add("Owner not found with id: " + updatedDto.getOwner().getId());
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
+
+        // Apply changes
+        if (existingStatus == Project.ProjectStatus.ARCHIVED && newStatus == Project.ProjectStatus.ACTIVE) {
+            existing.setStatus(Project.ProjectStatus.ACTIVE);
+        } else {
+            existing.setName(updatedDto.getName());
+            existing.setDescription(updatedDto.getDescription());
+            existing.setProjectKey(updatedDto.getProjectKey());
+            existing.setStartDate(updatedDto.getStartDate());
+            existing.setEndDate(updatedDto.getEndDate()); // endDate can be null
+            existing.setStatus(updatedDto.getStatus());
+
+            if (updatedDto.getOwner() != null) {
+                User owner = userRepository.findById(updatedDto.getOwner().getId()).get();
+                existing.setOwner(owner);
+            }
+        }
+
+        return convertToDto(projectRepository.save(existing));
+    }
 
 
 
@@ -216,6 +220,16 @@ public class ProjectService {
             return projectRepository.findAll(pageable)
                     .map(this::convertToDto);
         }
+    }
+
+    public List<ProjectDto> getOverdueProjects() {
+        List<Project> all = projectRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+        return all.stream()
+            .filter(p -> p.getEndDate() != null && p.getEndDate().isBefore(now))
+            .filter(p -> p.getStatus() != Project.ProjectStatus.COMPLETED && p.getStatus() != Project.ProjectStatus.ARCHIVED)
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
     }
 
     private ProjectDto convertToDto(Project project) {

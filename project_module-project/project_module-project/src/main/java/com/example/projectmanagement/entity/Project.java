@@ -57,7 +57,7 @@ public class Project {
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
-
+    // endDate is optional for open-ended projects
     @Column(name = "end_date")
     private LocalDateTime endDate;
 

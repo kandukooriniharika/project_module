@@ -36,7 +36,9 @@ public class ProjectDto {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @NotNull(message = "Start date is required")
     private LocalDateTime startDate;
+    // endDate is optional for open-ended projects
     private LocalDateTime endDate;
 
     public ProjectDto() {}
